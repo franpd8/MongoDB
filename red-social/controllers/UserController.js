@@ -1,14 +1,36 @@
 const User = require("../models/User");
+const bcrypt = require ('bcryptjs');
 
 const UserController ={
     async create(req,res){
         try {
-            const user = await User.create(req.body)
+        const password = await bcrypt.hash(req.body.password,10)
+            const user = await User.create({...req.body,password:password})
             res.status(201).send({message:"Usuario añadido con éxito",user})
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: 'Ha habido un problema al crear el usuario' })
         }
+    },
+async login(req,res){
+    try {
+        const user = await User.findOne({ email: req.body.email})
+        if (!user) {
+          res.status(400).send({
+            message:"Usuario no encontrado: Usuario o contraseña incorrectos"
+          })
+        }
+        const isMatch = await bcrypt.compare(req.body.password, user.password);
+        if(!isMatch) {
+          res.status(400).send({
+            message:"Error de datos: Usuario o contraseña incorrectos"})
+        }
+        // token = jwt.sign({ id: user.id }, jwt_secret);
+        // Token.create({ token, UserId: user.id });
+        res.send({message: "¡Cuánto tiempo sin verte " + user.name,user})
+      } catch (err) {
+        console.log(err);
+      }
     },
 async getAll(req, res) {
             try {
