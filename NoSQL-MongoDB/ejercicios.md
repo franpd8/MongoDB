@@ -3,6 +3,16 @@ A continuación, creará su propia base de datos de red social con las siguiente
 * Users
 * Posts
     * Comments
+
+Creamos la base de datos.
+```
+use redSocialDB
+```
+```
+db.createCollection("Users")
+db.createCollection("Posts")
+```
+
 # 1.2. Ejecute las siguientes consulta
 
 A continuación tendrás que realizar las siguientes consultas MongoDB:
@@ -51,7 +61,7 @@ db.post.insertMany(
     title: "Title Ten", body: "Here is the main description for the post Ten", username: "username 1",comments: [{comment: "comment Two", username: "username 2"}],date: Date() 
 },
 {
-    title: "Title Eleven", body: "Here is the main description for the post Eleven", username: "username 3",comments: [{comment: "comment One", username: "username 2"},{comment: "comment Two", username: "username 2"}],date: Date() 
+    title: "Title Eleven", body: "Here is the main description for the post Eleven", username: "username 3",comments: [{comment: "comment One", username: "username 2"}],date: Date() 
 },
 {
     title: "Title Twelve", body: "Here is the main description for the post Twelve", username: "username 2",comments: [{comment: "comment One", username: "username 2"}],date: Date() 
@@ -173,8 +183,15 @@ db.users.find({age:{$lt:23}})
 ```
 * Seleccione todos los usuarios que tengan una edad entre 25 y 30 años
 ```
-db.users.find({ $and: [ { age: { $gt:25 } }, { age: { $lt:30 } } ] })
+db.users.find({$and:[{age:{$gt:25}},{age:{$lt:30}}]})
 ```
+```
+db.Users.find({age:{$gt:25,$lt:30}})
+```
+```
+db.users.find({age:})
+```
+
 * Muestra los usuarios de edad menor a mayor y viceversa
 ```
 db.users.find().sort({age:1}) 
@@ -216,10 +233,22 @@ db.users.find()
 ```
 db.post.find( { comments: {$size: 2} } );
 ```
+```
+db.post.find({$and:[{comments:{$not:{$size:0}}},{comments: {$not:{$size:1}}}]}).count();
+```
+```
+db.post.find({$where:"this.comments.length >= 2"} )
+```
+
 * Seleccione la última publicación creada
 ```
 db.post.find({$text: {$search: "Title"}}).sort({date:-1}).limit(1)
 ```
+Sino también se puede ordenar por el id, que tiene oculto un timeStamp
+```
+db.post.find().sort({_id:-1}).limit(1)
+```
+
 * Selecciona 5 publicaciones y que sean las últimas creadas
 ```
 db.post.find({$text: {$search: "Title"}}).sort({date:-1}).limit(5)
@@ -227,7 +256,7 @@ db.post.find({$text: {$search: "Title"}}).sort({date:-1}).limit(5)
 * Elimina todas las publicaciones que tengan más de un comentario
 ```
 db.post.find()
-db.post.deleteMany( { comments: {$size: 2} } );
+db.post.deleteMany( {comments: {$size: 2}} );
 db.post.find()
 ```
 
