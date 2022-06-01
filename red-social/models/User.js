@@ -4,9 +4,6 @@ const UserSchema = new mongoose.Schema({
     name: {
         type:String,
         required:[true, 'Introduzca un usuario']},
-    username: {
-        type:String,
-        required:[true, 'Introduzca un usuario']},
     email:{
         type: String,
         required: [true,'Introduzca un email']
@@ -15,8 +12,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true,'Introduzca una contraseña']
     },
+    role: String,
     confirmed: Boolean,
-    tokens:[],  
+    tokens:[]  
+    
 }, { timestamps: true });
 
 const User = mongoose.model('User', UserSchema);

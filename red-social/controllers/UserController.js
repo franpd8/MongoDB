@@ -9,7 +9,7 @@ const UserController ={
     async register(req,res){
         try {
         const password = await bcrypt.hash(req.body.password,10)
-            const user = await User.create({...req.body,password:password,confirmed: false,})
+            const user = await User.create({...req.body,password:password,confirmed: false, role: "user" })
 
 // await transporter.sendMail({
 //     to: req.body.email,
@@ -81,6 +81,29 @@ async login(req,res){
 
       }
     },
+async logout(req, res) {
+  try {
+    await User.findByIdAndUpdate(req.user._id, {
+      $pull: { tokens: req.headers.authorization },
+    });
+    res.send({ message: "Desconectado con éxito" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Hubo un problema al intentar desconectar al usuario",
+    });
+  }
+},
+async getUser(req, res) {
+          try {
+             const user = await User.findOne({_id:req.user._id})
+  //  otra forma es .findById(req.user._id)
+             res.send(user)
+          } catch (error) {
+              console.error(error);
+              res.status(500).send({ message: 'Ha habido un problema al cargar la información del usuarios' })
+          }
+      },
 async getAll(req, res) {
             try {
                const users = await User.find()
@@ -99,19 +122,19 @@ async getAll(req, res) {
     res.status(500).send({ message: `Ha habido un problema al buscar el usuario con id = ${req.params._id}`})
             }
          },
-    // async getByName(req, res) {
-    //     try {
-    //       if (req.params.name.length >20){
-    //         return res.status(400).send('Busqueda demasiado larga')
-    //       }
-    //       const name = new RegExp(req.params.name, "i");
-    //       const user = await User.find({name:name});
-    //       res.send(user);
-    //     } catch (error) {
-    //       console.log(error);
-    // res.status(500).send({ message: `Ha habido un problema al buscar el usuario`})
-    //     }
-    //   },
+    async getByName(req, res) {
+        try {
+          if (req.params.name.length >20){
+            return res.status(400).send('Busqueda demasiado larga')
+          }
+          const name = new RegExp(req.params.name, "i");
+          const user = await User.find({name:name});
+          res.send(user);
+        } catch (error) {
+          console.log(error);
+    res.status(500).send({ message: `Ha habido un problema al buscar el usuario`})
+        }
+      },
     async delete(req, res) {
             try {
                 const user = await User.findByIdAndDelete(req.params._id)

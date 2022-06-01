@@ -1,15 +1,18 @@
-const express = require('express');
-const UserController = require('../controllers/UserController');
-const User = require('../models/User');
-const router = express.Router()
+const express = require("express");
+const UserController = require("../controllers/UserController");
+const { authentication, isAdmin } = require("../middlewares/authentication");
+const User = require("../models/User");
+const router = express.Router();
 
+router.post("/add", UserController.register);
+// router.post('/confirm', UserController.confirm)
+router.get("/all", UserController.getAll);
+router.get("/info", authentication,UserController.getUser)
+router.get("/id/:_id", authentication, isAdmin, UserController.getById);
+router.get('/name/:name', UserController.getByName)
+router.delete("/delete/:_id",authentication, isAdmin, UserController.delete);
+router.put("/update/:_id", authentication, isAdmin, UserController.update);
+router.post("/login", UserController.login);
+router.put("/logout", UserController.logout);
 
-router.post('/add', UserController.register)
-router.post('/confirm', UserController.confirm)
-router.get('/all', UserController.getAll)
-router.get('/id/:_id', UserController.getById)
-// router.get('/name/:_name', UserController.getByName)
-router.delete('/delete/:_id', UserController.delete)
-router.put('/update/:_id', UserController.update)
-router.post('/login', UserController.login)
 module.exports = router;

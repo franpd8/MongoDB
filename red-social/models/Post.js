@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const ObjectId = mongoose.SchemaTypes.ObjectId;
 const PostSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -9,9 +9,9 @@ const PostSchema = new mongoose.Schema({
         type: String,
         required: [true,'Debe especificar un descripción para su post']
       },
-    user:  {
-        type: String,
-        required: [true,'Debe especificar un usuario para su post']
+      userId: {
+        type: ObjectId,
+        ref: 'User'
       },
     comments: Array,
 }, { timestamps: true });
