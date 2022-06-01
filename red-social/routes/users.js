@@ -13,6 +13,6 @@ router.get('/name/:name', UserController.getByName)
 router.delete("/delete/:_id",authentication, isAdmin, UserController.delete);
 router.put("/update/:_id", authentication, isAdmin, UserController.update);
 router.post("/login", UserController.login);
-router.put("/logout", UserController.logout);
+router.put("/logout", authentication,UserController.logout);
 
 module.exports = router;

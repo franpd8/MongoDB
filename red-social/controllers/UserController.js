@@ -83,10 +83,10 @@ async login(req,res){
     },
 async logout(req, res) {
   try {
-    await User.findByIdAndUpdate(req.user._id, {
+    const user = await User.findByIdAndUpdate(req.user._id, {
       $pull: { tokens: req.headers.authorization },
     });
-    res.send({ message: "Desconectado con éxito" });
+    res.send({ message: "Desconectado con éxito " +user.name });
   } catch (error) {
     console.error(error);
     res.status(500).send({

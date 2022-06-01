@@ -24,7 +24,6 @@ const PostController = {
         ]);
     }
   },
-
   async getAll(req, res) {
     try {
       const posts = await Post.find();
@@ -72,6 +71,24 @@ const PostController = {
         .status(500)
         .send({ message: "Ha habido un problema al actualizar el post" });
     }
-  },
+  },async getByName(req, res) {
+        try {
+          if (req.params.search.length >20){
+            return res.status(400).send('Busqueda demasiado larga')
+          }
+          const search = new RegExp(req.params.search, "i");
+          const post = await Post.find({body:search});
+    console.log(post)
+    if (post.length === 0 ) {
+      res.status(200).send({
+        message: "No hemos encontrado ningún resultado",
+      });
+    } else{
+          res.send(post);}
+        } catch (error) {
+          console.log(error);
+    res.status(500).send({ message:`Ha habido un problema al buscar el post `})
+        }
+      },
 };
 module.exports = PostController;
