@@ -1,35 +1,84 @@
 const User = require("../models/User");
 const bcrypt = require ('bcryptjs');
+const transporter = require("../config/nodemailer");
+const jwt = require('jsonwebtoken');
+const { jwt_secret } = require('../config/keys.js')
+
 
 const UserController ={
-    async create(req,res){
+    async register(req,res){
         try {
         const password = await bcrypt.hash(req.body.password,10)
-            const user = await User.create({...req.body,password:password})
-            res.status(201).send({message:"Usuario añadido con éxito",user})
+            const user = await User.create({...req.body,password:password,confirmed: false,})
+
+// await transporter.sendMail({
+//     to: req.body.email,
+//     subject: "Confirme su registro",
+//     html: `<h3>Bienvenido, estás a un paso de registrarte </h3>
+//     <a href="#"> Click para confirmar tu registro</a>
+//     `,
+//   });
+
+res.status(201).send({message:"Te hemos enviado un correo para confirmar el registro",user})
         } catch (error) {
             console.error(error)
-            res.status(500).send({ message: 'Ha habido un problema al crear el usuario' })
+            res
+        .status(500)
+        .send([
+          { message: "Ha habido un problema al crear el usuario" },
+          error.message,
+        ])
         }
     },
+// Me he quedado aqui
+async confirm(req,res){
+    try {
+      const user = await User.findByIdAndUpdate(
+        req.params._id,
+        {confirmed:true},
+        { new: true })
+      res.status(201).send({message:"Usuario confirmado con exito"},user);
+    } catch (error){
+      console.error(error)
+    }
+  },
+
 async login(req,res){
     try {
-        const user = await User.findOne({ email: req.body.email})
+      // 1 - Buscar usuario
+        const user = await User.findOne({email: req.body.email})
         if (!user) {
           res.status(400).send({
             message:"Usuario no encontrado: Usuario o contraseña incorrectos"
           })
         }
+        // 2 - confirmar contraseña
         const isMatch = await bcrypt.compare(req.body.password, user.password);
         if(!isMatch) {
           res.status(400).send({
             message:"Error de datos: Usuario o contraseña incorrectos"})
         }
-        // token = jwt.sign({ id: user.id }, jwt_secret);
-        // Token.create({ token, UserId: user.id });
-        res.send({message: "¡Cuánto tiempo sin verte " + user.name,user})
+        //  3- opcional confirmar email 
+        // if(!user.confirmed){
+        //     return res.status(400).send({message:"Debes confirmar tu correo"})
+        // }
+
+        //  4- crear token 
+
+      //  creacion del token con la info de la id del usuario y el secreto
+        const token = jwt.sign({ _id: user._id }, jwt_secret);
+        // determina un limite de 4 tokens/sesiones, manteniendo siempre la más reciente con .shift
+        if (user.tokens.length > 4) user.tokens.shift();
+        // guarda en el usuario el array de tokens
+        user.tokens.push(token);
+        // guarda en la bd
+        await user.save();
+        // 5 - bienvenida
+        res.send({token, message: "¡Cuánto tiempo sin verte " + user.name,user})
       } catch (err) {
         console.log(err);
+        res.status(500).send({ message: `Ha habido un problema al conectarse`})
+
       }
     },
 async getAll(req, res) {
