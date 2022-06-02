@@ -50,6 +50,29 @@ const PostController = {
         });
     }
   },
+
+  async getByUser(req, res) {
+    try {
+      const posts = await User.findById(req.params._id).populate({path:"postIds",select:{title:1}})
+      res.send(posts);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .send({ message: "Ha habido un problema al cargar los post del usuario" });
+    }
+  },
+  async getMine(req, res) {
+    try {
+      const posts = await User.findById(req.user._id).populate({path:"postIds",select:{title:1}})
+      res.send(posts);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .send({ message: "Ha habido un problema al cargar los post del usuario" });
+    }
+  },
   async delete(req, res) {
     try {
       const post = await Post.findByIdAndDelete(req.params._id);
