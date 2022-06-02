@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
+const ObjectId = mongoose.SchemaTypes.ObjectId;
+
 
 const UserSchema = new mongoose.Schema({
     name: {
         type:String,
-        required:[true, 'Introduzca un usuario']},
+        required:[true, 'Introduzca su usuario']},
     email:{
         type: String,
-        required: [true,'Introduzca un email']
+        required: [true,'Introduzca su email'],
+        unique: true,
+        match: [/.+\@.+\..+/,"Introduzca un email válido"],
       },
     password:{
         type: String,
@@ -14,7 +18,8 @@ const UserSchema = new mongoose.Schema({
     },
     role: String,
     confirmed: Boolean,
-    tokens:[]  
+    tokens:[],
+    postIds:[{ type: ObjectId, ref: 'Post'}]
     
 }, { timestamps: true });
 

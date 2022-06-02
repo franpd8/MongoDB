@@ -12,7 +12,7 @@ const authentication = async(req, res, next) => {
         // buscamos el usuario con la id que nos aporta el token
         const user = await User.findOne({ _id: payload._id, tokens: token });
         if (!user) {
-            return res.status(401).send({ message: 'No estas autorizado' });
+            return res.status(401).send({ message: 'No tienes permiso para hacer eso' });
         }
         req.user = user;
         next();
