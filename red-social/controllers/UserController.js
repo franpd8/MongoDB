@@ -113,8 +113,10 @@ const UserController = {
   },
   async getUser(req, res) {
     try {
-      const user = await User.findOne({ _id: req.user._id });
+      const user = await User.findOne({ _id: req.user._id }).populate("postIds");
       //  otra forma es .findById(req.user._id)
+
+
       res.send(user);
     } catch (error) {
       console.error(error);

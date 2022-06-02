@@ -8,7 +8,7 @@ const PostController = {
         ...req.body,
         userId: req.user._id,
       });
-      await User.findByIdAndUpdate(req.user._id, { $push: { postIds: post._id } })
+      await User.findByIdAndUpdate(req.user._id, { $push: { postIds: post._id}})
       res.status(201).send({ message: "Post añadido con éxito", post });
     } catch (error) {
       // catch (err) {
@@ -28,7 +28,7 @@ const PostController = {
   },
   async getAll(req, res) {
     try {
-      const posts = await Post.find().populate("userId")
+      const posts = await Post.find({},{title:1,body:1,comments:1}).populate({path:"userId",select:{name:1}})
       res.send(posts);
     } catch (error) {
       console.error(error);
