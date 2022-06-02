@@ -29,14 +29,27 @@ const CommentController = {
   async getAllByPost(req, res) {
     try {
       const comments = await Post.findOne(
+        //   busca por parametro y muestra solo title y body
         { id: req.params.id },
         { title: 1, body: 1 }
       )
-        .populate({ path: "userId", select: { name: 1 } })
+        //   añade info del dueño del post
+        .populate({
+          path: "userId",
+          // pero muestra solo nombre
+          select: { name: 1 },
+        })
+        // añade info de los comentarios del post
         .populate({
           path: "comments",
-          select: { body: 1, postId: 1 },
-          populate: { path: "userId", select: { name: 1 } },
+          //   pero solo valor
+          select: { body: 1 },
+          //   añade info del dueño del comentario
+          populate: {
+            path: "userId",
+            //   pero solo nombre
+            select: { name: 1 },
+          },
         });
 
       res.send(comments);
@@ -50,11 +63,23 @@ const CommentController = {
   async getAllByUser(req, res) {
     try {
       const comments = await User.findById(req.params._id)
-      .populate({
-         path: "commentIds",
-         select:{body:1,postId:1},
-        populate:{path:"postId",select:{title:1}}
-       });
+        //   añade comentarios del usuario
+        .populate({
+          path: "commentIds",
+          //  muestra solo el valor del comentario y el postId asociado
+          select: { body: 1, postId: 1 },
+          populate: {
+            // añade info del post
+            path: "postId",
+            // muestra solo titulo y dueño
+            select: { title: 1, userId: 1 },
+            populate: {
+              // añade nombre del dueño del post
+              path: "userId",
+              select: { name: 1 },
+            },
+          },
+        });
 
       res.send(comments);
     } catch (error) {
