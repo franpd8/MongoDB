@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
-const PORT = 8080;
+// const PORT = 8080;
+require("dotenv").config();
+// sustitute a la constante PORT anterior 
+const PORT = process.env.PORT || 3001;
 const { dbConnection } = require("./config/config")
 const { typeError } = require('./middlewares/errors');
 
@@ -12,7 +15,6 @@ dbConnection()
 
 app.use('/users', require('./routes/users'));
 app.use('/posts', require('./routes/posts'));
-app.use('/comments', require('./routes/comments'));
 
 app.use(typeError)
 

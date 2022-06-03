@@ -1,7 +1,10 @@
 const User = require('../models/User');
 const Post = require('../models/Post')
 const jwt = require('jsonwebtoken');
-const { jwt_secret } = require('../config/keys.js')
+// const { jwt_secret } = require('../config/keys.js')
+// cambios por variable de entorno
+require("dotenv").config();
+const jwt_secret = process.env.JWT_SECRET 
 
 const authentication = async(req, res, next) => {
     try {
