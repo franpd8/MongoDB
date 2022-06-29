@@ -13,12 +13,6 @@ const PostController = {
       });
       res.status(201).send({ message: "Post añadido con éxito", post });
     } catch (error) {
-      // catch (err) {
-      //   // console.log(err)
-      //   // err.origin = 'Post'
-      //   res.send(err)
-      //   // next(err)
-      // }
       console.error(error);
       res
         .status(500)
