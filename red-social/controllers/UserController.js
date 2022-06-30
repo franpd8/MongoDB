@@ -32,6 +32,8 @@ const UserController = {
           user,
         });
     } catch (error) {
+
+
       console.error(error);
       // res
       //   .status(500)
@@ -90,7 +92,7 @@ const UserController = {
       // guarda en la bd
       await user.save();
       // 5 - bienvenida
-      res.send({
+      res.status(200).send({
         token,
         message: "¡Cuánto tiempo sin verte " + user.name,
         user,
