@@ -2,6 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const transporter = require("../config/nodemailer");
 const jwt = require("jsonwebtoken");
+const { restart } = require("nodemon");
 // const { jwt_secret } = require("../config/keys.js");
 require("dotenv").config();
 const jwt_secret = process.env.JWT_SECRET 
@@ -32,9 +33,6 @@ const UserController = {
           user,
         });
     } catch (error) {
-
-
-      console.error(error);
       // res
       //   .status(500)
       //   .send([
@@ -65,14 +63,17 @@ const UserController = {
       // 1 - Buscar usuario
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
-        res.status(400).send({
+        return res.status(400).send({
           message: "Usuario no encontrado: Usuario o contraseña incorrectos",
         });
+       
       }
       // 2 - confirmar contraseña
-      const isMatch = await bcrypt.compare(req.body.password, user.password);
+        const isMatch = await bcrypt.compare(req.body.password, user.password);
+        console.log("ismatch",isMatch)
+     
       if (!isMatch) {
-        res.status(400).send({
+        return res.status(400).send({
           message: "Error de datos: Usuario o contraseña incorrectos",
         });
       }
@@ -92,14 +93,14 @@ const UserController = {
       // guarda en la bd
       await user.save();
       // 5 - bienvenida
-      res.status(200).send({
+      return res.status(200).send({
         token,
         message: "¡Cuánto tiempo sin verte " + user.name,
         user,
       });
     } catch (err) {
       console.log(err);
-      res.status(500).send({ message: `Ha habido un problema al conectarse`});
+      return res.status(500).send({ message: `Ha habido un problema al conectarse`});
     }
   },
   async logout(req, res) {
@@ -110,7 +111,7 @@ const UserController = {
       res.send({ message: "Desconectado con éxito " + user.name });
     } catch (error) {
       console.error(error);
-      res.status(500).send({
+      return res.status(500).send({
         message: "Hubo un problema al intentar desconectar al usuario",
       });
     }
@@ -124,7 +125,7 @@ const UserController = {
       res.send(user);
     } catch (error) {
       console.error(error);
-      res
+      return res
         .status(500)
         .send({
           message:
@@ -138,7 +139,7 @@ const UserController = {
       res.send(users);
     } catch (error) {
       console.error(error);
-      res
+      return es
         .status(500)
         .send({ message: "Ha habido un problema al cargar los usuarios" });
     }
@@ -149,7 +150,7 @@ const UserController = {
       res.send(user);
     } catch (error) {
       console.error(error);
-      res
+      return res
         .status(500)
         .send({
           message: `Ha habido un problema al buscar el usuario con id = ${req.params._id}`,
@@ -163,10 +164,10 @@ const UserController = {
       }
       const name = new RegExp(req.params.name, "i");
       const user = await User.find({ name: name });
-      res.send(user);
+      return res.send(user);
     } catch (error) {
       console.log(error);
-      res
+      return res
         .status(500)
         .send({ message: `Ha habido un problema al buscar el usuario` });
     }
@@ -177,7 +178,7 @@ const UserController = {
       res.send({ user, message: "Usuario eliminado" });
     } catch (error) {
       console.error(error);
-      res
+      return res
         .status(500)
         .send({ message: "Ha habido un problema al eliminar el usuario" });
     }
@@ -190,7 +191,7 @@ const UserController = {
       res.send({ message: "usuario actualizado con éxito", user });
     } catch (error) {
       console.error(error);
-      res
+      return res
         .status(500)
         .send({ message: "Ha habido un problema al actualizar el usuario" });
     }
