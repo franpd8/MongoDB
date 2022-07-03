@@ -28,6 +28,7 @@ const PostController = {
         .populate({ path: "userId", select: { name: 1, email: 1 } })
         .populate({
           path: "comments",
+          model:"Comment",
           select:{body:1},
           populate: {path:"userId",select: { name: 1 }}  
         });
@@ -42,7 +43,13 @@ const PostController = {
   },
   async getById(req, res) {
     try {
-      const post = await Post.findById(req.params._id);
+      const post = await Post.findById(req.params._id)
+      .populate({
+           path: "comments",
+           model:"Comment",
+           select:{body:1},
+         populate: {path:"userId",select: { name: 1 }}  
+        })
       res.send(post);
     } catch (error) {
       console.error(error);

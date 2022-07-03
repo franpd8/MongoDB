@@ -9,10 +9,10 @@ const CommentSchema = new mongoose.Schema(
       type: ObjectId,
       ref: "User",
     },
-    postId:{
-        type:ObjectId,
-        ref:"Post"
-    }
+    postId: {
+      type: ObjectId,
+      ref: "Post",
+    },
   },
   { timestamps: true }
 );

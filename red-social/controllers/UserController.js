@@ -70,7 +70,6 @@ const UserController = {
       }
       // 2 - confirmar contraseña
         const isMatch = await bcrypt.compare(req.body.password, user.password);
-        console.log("ismatch",isMatch)
      
       if (!isMatch) {
         return res.status(400).send({
